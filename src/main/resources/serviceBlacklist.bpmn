@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_1qgmja4" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="3.6.0">
+  <bpmn:process id="service-blacklist" name="Service Blacklist" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>Flow_02z04rb</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_02z04rb" sourceRef="StartEvent_1" targetRef="Activity_19xv52p" />
+    <bpmn:serviceTask id="Activity_19xv52p" name="Lookup service blacklist" camunda:type="external" camunda:topic="service-blacklist">
+      <bpmn:incoming>Flow_02z04rb</bpmn:incoming>
+      <bpmn:outgoing>Flow_0kfwfpj</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="Gateway_1h6m19u">
+      <bpmn:incoming>Flow_0kfwfpj</bpmn:incoming>
+      <bpmn:outgoing>Flow_18zxp3n</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0atqzdl</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_0kfwfpj" sourceRef="Activity_19xv52p" targetRef="Gateway_1h6m19u" />
+    <bpmn:sequenceFlow id="Flow_18zxp3n" sourceRef="Gateway_1h6m19u" targetRef="Activity_0f3f0b4">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{ listed == 'none'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:endEvent id="Event_0u73n1v">
+      <bpmn:incoming>Flow_0atqzdl</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0atqzdl" name="Service Blacklisted" sourceRef="Gateway_1h6m19u" targetRef="Event_0u73n1v">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{listed == 'service blacklist'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:endEvent id="Event_1vc59g0">
+      <bpmn:incoming>Flow_1cjduks</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_1cjduks" sourceRef="Activity_0f3f0b4" targetRef="Event_1vc59g0" />
+    <bpmn:serviceTask id="Activity_0f3f0b4" name="Lookup group service blacklist" camunda:type="external" camunda:topic="service-group-blacklist">
+      <bpmn:incoming>Flow_18zxp3n</bpmn:incoming>
+      <bpmn:outgoing>Flow_1cjduks</bpmn:outgoing>
+    </bpmn:serviceTask>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="service-blacklist">
+      <bpmndi:BPMNEdge id="Flow_1cjduks_di" bpmnElement="Flow_1cjduks">
+        <di:waypoint x="690" y="117" />
+        <di:waypoint x="772" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0atqzdl_di" bpmnElement="Flow_0atqzdl">
+        <di:waypoint x="450" y="142" />
+        <di:waypoint x="450" y="230" />
+        <di:waypoint x="772" y="230" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="563" y="196" width="53" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_18zxp3n_di" bpmnElement="Flow_18zxp3n">
+        <di:waypoint x="475" y="117" />
+        <di:waypoint x="590" y="117" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="508" y="99" width="52" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0kfwfpj_di" bpmnElement="Flow_0kfwfpj">
+        <di:waypoint x="370" y="117" />
+        <di:waypoint x="425" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_02z04rb_di" bpmnElement="Flow_02z04rb">
+        <di:waypoint x="215" y="117" />
+        <di:waypoint x="270" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="179" y="99" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0gfzmuk_di" bpmnElement="Activity_19xv52p">
+        <dc:Bounds x="270" y="77" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1h6m19u_di" bpmnElement="Gateway_1h6m19u" isMarkerVisible="true">
+        <dc:Bounds x="425" y="92" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1vc59g0_di" bpmnElement="Event_1vc59g0">
+        <dc:Bounds x="772" y="99" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1l7zplv_di" bpmnElement="Activity_0f3f0b4">
+        <dc:Bounds x="590" y="77" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0u73n1v_di" bpmnElement="Event_0u73n1v">
+        <dc:Bounds x="772" y="212" width="36" height="36" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

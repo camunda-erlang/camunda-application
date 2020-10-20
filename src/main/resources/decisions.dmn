@@ -1,0 +1,426 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/DMN/20151101/dmn.xsd" xmlns:biodi="http://bpmn.io/schema/dmn/biodi/1.0" id="Decisions" name="DRD" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Modeler" exporterVersion="3.6.0">
+  <decision id="service-validation" name="Service Validation">
+    <extensionElements>
+      <biodi:bounds x="150" y="81" width="180" height="80" />
+    </extensionElements>
+    <decisionTable id="decisionTable_1" hitPolicy="FIRST">
+      <input id="input_1" label="Service Type">
+        <inputExpression id="inputExpression_1" typeRef="string">
+          <text>service_type</text>
+        </inputExpression>
+        <inputValues id="UnaryTests_1ylelq3">
+          <text>"subscription","on-demand"</text>
+        </inputValues>
+      </input>
+      <input id="InputClause_0tgi7dh" label="Managed Service">
+        <inputExpression id="LiteralExpression_0kbywfe" typeRef="boolean">
+          <text>managed</text>
+        </inputExpression>
+      </input>
+      <output id="output_1" label="Service Valid" name="service_valid" typeRef="boolean" />
+      <rule id="DecisionRule_0i8vm66">
+        <inputEntry id="UnaryTests_1f9rhaa">
+          <text>"subscription"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0052g6p">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0g2aj4v">
+          <text>true</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1yvl6hz">
+        <inputEntry id="UnaryTests_00g4yfp">
+          <text>"on-demand"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_15y3lm9">
+          <text>true</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0gdqtm9">
+          <text>true</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_11mt79p">
+        <inputEntry id="UnaryTests_042iylf">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_05x5c5t">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0s1pmzk">
+          <text>false</text>
+        </outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+  <decision id="list-status" name="List Status">
+    <extensionElements>
+      <biodi:bounds x="156" y="476" width="180" height="80" />
+    </extensionElements>
+    <decisionTable id="DecisionTable_1ounv3g" hitPolicy="FIRST">
+      <input id="InputClause_1hgdvlu" label="Service Valid">
+        <inputExpression id="LiteralExpression_0xlwmk8" typeRef="boolean">
+          <text>service_valid</text>
+        </inputExpression>
+      </input>
+      <input id="InputClause_0oo00sq" label="Partner Dnd">
+        <inputExpression id="LiteralExpression_07c8eiv" typeRef="boolean">
+          <text>partner_dnd</text>
+        </inputExpression>
+      </input>
+      <input id="InputClause_0vzhuej" label="Device Blacklist">
+        <inputExpression id="LiteralExpression_1fq1rjr" typeRef="boolean">
+          <text>device_blacklist</text>
+        </inputExpression>
+      </input>
+      <input id="InputClause_0e5ei6r" label="List Status">
+        <inputExpression id="LiteralExpression_0nvimj4" typeRef="string">
+          <text>listed</text>
+        </inputExpression>
+        <inputValues id="UnaryTests_02bu2bx">
+          <text>"blacklist all","whitelist all","service blacklist","service whitelist","charging blacklist","subscription blacklist","none"</text>
+        </inputValues>
+      </input>
+      <output id="OutputClause_1oagdmh" label="Status" name="status" typeRef="string">
+        <outputValues id="UnaryTests_0dor27g">
+          <text>"blacklist all","whitelist all","service blacklist","service whitelist","charging blacklist","subscription blacklist","invalid service","subscriber dnd","device blacklist","not listed"</text>
+        </outputValues>
+      </output>
+      <rule id="DecisionRule_0ko6gwg">
+        <inputEntry id="UnaryTests_1lhzxqf">
+          <text>false</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0nn1v4k">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1oa9o04">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0i0mi8o">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0idwctm">
+          <text>"invalid service"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1qkphjv">
+        <inputEntry id="UnaryTests_0dsrvhr">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0k2jfjg">
+          <text>true</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_00kch97">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1kkfqd2">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1xjjoj3">
+          <text>"subscriber dnd"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1ez4o5f">
+        <inputEntry id="UnaryTests_1sprk3r">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1ntj4r0">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1nw5ka9">
+          <text>true</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0geqjxa">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1873v31">
+          <text>"device blacklist"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_02jcp26">
+        <inputEntry id="UnaryTests_1hmjyh1">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0fsyfed">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0ktpscs">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1tthx8t">
+          <text>"blacklist all"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0cautid">
+          <text>"blacklist all"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0c3xltt">
+        <inputEntry id="UnaryTests_0l5o8kg">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1ec0to8">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1151lo8">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_13temz4">
+          <text>"whitelist all"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_00ue655">
+          <text>"whitelist all"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_18uwpku">
+        <inputEntry id="UnaryTests_0n8xj1i">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1ft0lf7">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1ut5ngp">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1qowd4r">
+          <text>"service blacklist"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0g32pq9">
+          <text>"service blacklist"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_03uyjep">
+        <inputEntry id="UnaryTests_0cxukn7">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0hd8hcy">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_118jwgg">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1coxbk0">
+          <text>"service whitelist"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0uk1t44">
+          <text>"service whitelist"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1womjwc">
+        <inputEntry id="UnaryTests_00xy52v">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_12tc58s">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0zivqny">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_039u0pc">
+          <text>"global charging blacklist"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1mqdb2n">
+          <text>"global charging blacklist"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1mov3k9">
+        <inputEntry id="UnaryTests_0ujwqcs">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1mlqcdx">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1io6cpt">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0j47v2d">
+          <text>"global subscription blacklist"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1ypgvjb">
+          <text>"global subscription blacklist"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0fxf25t">
+        <inputEntry id="UnaryTests_0j5bib7">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0n1jh1u">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0hf5mn8">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0igs9ip">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0kyypmr">
+          <text>"not listed"</text>
+        </outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+  <decision id="list-for-all" name="List for all">
+    <extensionElements>
+      <biodi:bounds x="156" y="208" width="180" height="80" />
+    </extensionElements>
+    <decisionTable id="DecisionTable_1thb2m5" hitPolicy="FIRST">
+      <input id="InputClause_1mwy10k" label="Global service whitelist">
+        <inputExpression id="LiteralExpression_0z7o2d1" typeRef="boolean">
+          <text>global_service_whitelist</text>
+        </inputExpression>
+      </input>
+      <input id="InputClause_163fx5i" label="Global service blacklist">
+        <inputExpression id="LiteralExpression_1gwqtcz" typeRef="boolean">
+          <text>global_service_blacklist</text>
+        </inputExpression>
+      </input>
+      <output id="OutputClause_0nq7zwn" label="Listed" name="listed" typeRef="string">
+        <outputValues id="UnaryTests_0jia50y">
+          <text>"whitelist all","blacklist all","none"</text>
+        </outputValues>
+      </output>
+      <rule id="DecisionRule_1hhk5hz">
+        <inputEntry id="UnaryTests_0jiam0k">
+          <text>true</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1okn3wd">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1ikwh3n">
+          <text>"whitelist all"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1sef38t">
+        <inputEntry id="UnaryTests_07cqf86">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0jk0gq3">
+          <text>true</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_09c01n2">
+          <text>"blacklist all"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1quiifv">
+        <inputEntry id="UnaryTests_0s9euz3">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_06nyvwj">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0q94zo4">
+          <text>"none"</text>
+        </outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+  <decision id="global-blacklist-eligible" name="Global blacklist eligible">
+    <extensionElements>
+      <biodi:bounds x="152" y="336" width="180" height="80" />
+    </extensionElements>
+    <decisionTable id="DecisionTable_0o4nz6i" hitPolicy="FIRST">
+      <input id="InputClause_13chidi" label="Global subscription blacklist">
+        <inputExpression id="LiteralExpression_1vql3ho" typeRef="boolean">
+          <text>enable_global_subscription_blacklist</text>
+        </inputExpression>
+      </input>
+      <input id="InputClause_07a4ony" label="Global charging blacklist">
+        <inputExpression id="LiteralExpression_019uj2q" typeRef="boolean">
+          <text>enable_global_charging_blacklist</text>
+        </inputExpression>
+      </input>
+      <input id="InputClause_1hons88" label="Managed service">
+        <inputExpression id="LiteralExpression_0vch0mp" typeRef="boolean">
+          <text>managed</text>
+        </inputExpression>
+      </input>
+      <output id="OutputClause_04o3jkn" label="Global subscription blacklist lookup" name="global_subscription_blacklist_lookup" typeRef="boolean" />
+      <output id="OutputClause_17pw0f9" label="Global charging blacklist lookup" name="global_charging_blacklist_lookup" typeRef="boolean" />
+      <rule id="DecisionRule_1qpmurp">
+        <inputEntry id="UnaryTests_030n3v5">
+          <text>true</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_127wojj">
+          <text>true</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1q4g1yt">
+          <text>true</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0j4hh1p">
+          <text>true</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_03crib9">
+          <text>true</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1wsj81e">
+        <inputEntry id="UnaryTests_0e718v2">
+          <text>true</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_19b9kxy">
+          <text>false</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_101m2ov">
+          <text>true</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0j9mhye">
+          <text>true</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1ttem7w">
+          <text>false</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_08l9rsh">
+        <inputEntry id="UnaryTests_1w6mk8r">
+          <text>false</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1wj2syt">
+          <text>true</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1c4gtvk">
+          <text>true</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1e2c92l">
+          <text>false</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_16k3uyb">
+          <text>true</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1verc3h">
+        <inputEntry id="UnaryTests_0ui6wcb">
+          <text>true</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0zk7tqm">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0t9eoik">
+          <text>false</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0lfn6gn">
+          <text>true</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0ap2cl8">
+          <text>false</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0ey66f5">
+        <inputEntry id="UnaryTests_0b4i68b">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0gjx2f1">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_032q5jb">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0pkis5g">
+          <text>false</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1d84eyj">
+          <text>false</text>
+        </outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+</definitions>

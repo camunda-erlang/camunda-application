@@ -1,0 +1,464 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1ykfl5b" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="3.6.0">
+  <bpmn:process id="service-list-validation" name="Service List Validation" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>Flow_1ukq2yl</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_1ukq2yl" sourceRef="StartEvent_1" targetRef="Activity_0yvqoaa" />
+    <bpmn:businessRuleTask id="Activity_1jif6nn" name="Validate Service" camunda:resultVariable="service_valid" camunda:decisionRef="service-validation" camunda:mapDecisionResult="singleEntry">
+      <bpmn:incoming>Flow_1rypkg1</bpmn:incoming>
+      <bpmn:outgoing>Flow_1u1o29d</bpmn:outgoing>
+    </bpmn:businessRuleTask>
+    <bpmn:exclusiveGateway id="Gateway_1xzql2l">
+      <bpmn:incoming>Flow_1u1o29d</bpmn:incoming>
+      <bpmn:outgoing>Flow_1tqe1kk</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1scdb5d</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_1u1o29d" sourceRef="Activity_1jif6nn" targetRef="Gateway_1xzql2l" />
+    <bpmn:sequenceFlow id="Flow_1tqe1kk" name="Not valid" sourceRef="Gateway_1xzql2l" targetRef="Event_1bc52w4">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{not service_valid}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_1scdb5d" name="Valid" sourceRef="Gateway_1xzql2l" targetRef="Activity_0w81915">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{service_valid}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:serviceTask id="Activity_0w81915" name="Partner DND lookup" camunda:type="external" camunda:topic="partner-dnd">
+      <bpmn:incoming>Flow_1scdb5d</bpmn:incoming>
+      <bpmn:outgoing>Flow_0yhs6yb</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="Gateway_1agzfed">
+      <bpmn:incoming>Flow_0xs6c7e</bpmn:incoming>
+      <bpmn:outgoing>Flow_1o255gk</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0b74pmw</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:exclusiveGateway id="Gateway_0cz1g7q">
+      <bpmn:incoming>Flow_0b74pmw</bpmn:incoming>
+      <bpmn:outgoing>Flow_0t56brp</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1sg3moj</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_0t56brp" name="Service Whitelist enabled" sourceRef="Gateway_0cz1g7q" targetRef="Activity_1ps15ey">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{enable_service_whitelist}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:exclusiveGateway id="Gateway_0lcselu">
+      <bpmn:incoming>Flow_1sg3moj</bpmn:incoming>
+      <bpmn:incoming>Flow_1rxzdv8</bpmn:incoming>
+      <bpmn:outgoing>Flow_1c14lxg</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0bmpf51</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_1sg3moj" sourceRef="Gateway_0cz1g7q" targetRef="Gateway_0lcselu">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{not enable_service_whitelist}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_1o255gk" name="Service List for all" sourceRef="Gateway_1agzfed" targetRef="Event_1hu00jo">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{listed== 'whitelist all' or listed == 'blacklist all'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:exclusiveGateway id="Gateway_0l3u98s">
+      <bpmn:incoming>Flow_05nzsi2</bpmn:incoming>
+      <bpmn:outgoing>Flow_0xqnk06</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1rxzdv8</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_05nzsi2" sourceRef="Activity_1ps15ey" targetRef="Gateway_0l3u98s" />
+    <bpmn:sequenceFlow id="Flow_0xqnk06" name="Whitelised" sourceRef="Gateway_0l3u98s" targetRef="Event_19wdoo3">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{listed == 'service whitelist'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_1rxzdv8" sourceRef="Gateway_0l3u98s" targetRef="Gateway_0lcselu">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{listed == 'none'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_1c14lxg" name="Service blacklist enabled" sourceRef="Gateway_0lcselu" targetRef="Activity_1nwyttq">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{enable_service_blacklist}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:exclusiveGateway id="Gateway_1xkinlz">
+      <bpmn:incoming>Flow_0g0jbd4</bpmn:incoming>
+      <bpmn:outgoing>Flow_1myzpyr</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0hf0k11</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_0g0jbd4" sourceRef="Activity_1nwyttq" targetRef="Gateway_1xkinlz" />
+    <bpmn:sequenceFlow id="Flow_1myzpyr" name="Blacklisted" sourceRef="Gateway_1xkinlz" targetRef="Event_0cjhrir">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{listed == 'service blacklist'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_0essqh6" sourceRef="Activity_0cmj7cn" targetRef="Event_1hul7gt" />
+    <bpmn:sequenceFlow id="Flow_0hf0k11" sourceRef="Gateway_1xkinlz" targetRef="Activity_1xpu7uh">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{listed == 'none'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:businessRuleTask id="Activity_1xpu7uh" name="Global blacklist eligible" camunda:resultVariable="Lookup" camunda:decisionRef="global-blacklist-eligible" camunda:mapDecisionResult="singleResult">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:outputParameter name="global_subscription_blacklist_lookup">${Lookup.get('global_subscription_blacklist_lookup')}</camunda:outputParameter>
+          <camunda:outputParameter name="global_charging_blacklist_lookup">${Lookup.get('global_charging_blacklist_lookup')}</camunda:outputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0hf0k11</bpmn:incoming>
+      <bpmn:incoming>Flow_0bmpf51</bpmn:incoming>
+      <bpmn:outgoing>Flow_1wq6mur</bpmn:outgoing>
+    </bpmn:businessRuleTask>
+    <bpmn:sequenceFlow id="Flow_0bmpf51" sourceRef="Gateway_0lcselu" targetRef="Activity_1xpu7uh">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{not enable_service_blacklist}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:exclusiveGateway id="Gateway_1fpxqtf">
+      <bpmn:incoming>Flow_1wq6mur</bpmn:incoming>
+      <bpmn:outgoing>Flow_1vn6g5r</bpmn:outgoing>
+      <bpmn:outgoing>Flow_179xb3z</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_1wq6mur" sourceRef="Activity_1xpu7uh" targetRef="Gateway_1fpxqtf" />
+    <bpmn:sequenceFlow id="Flow_1vn6g5r" sourceRef="Gateway_1fpxqtf" targetRef="Event_0obixa6">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{not global_subscription_blacklist_lookup and not global_charging_blacklist_lookup}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_179xb3z" sourceRef="Gateway_1fpxqtf" targetRef="Activity_0cmj7cn">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{global_subscription_blacklist_lookup or global_charging_blacklist_lookup}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:exclusiveGateway id="Gateway_0of0w5x">
+      <bpmn:incoming>Flow_0yhs6yb</bpmn:incoming>
+      <bpmn:outgoing>Flow_0mu4ibq</bpmn:outgoing>
+      <bpmn:outgoing>Flow_15d65h3</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_0yhs6yb" sourceRef="Activity_0w81915" targetRef="Gateway_0of0w5x" />
+    <bpmn:sequenceFlow id="Flow_0mu4ibq" sourceRef="Gateway_0of0w5x" targetRef="Activity_1eer6a5">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{not partner_dnd}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:serviceTask id="Activity_1eer6a5" name="Device blacklist lookup" camunda:type="external" camunda:topic="device-blacklist">
+      <bpmn:incoming>Flow_0mu4ibq</bpmn:incoming>
+      <bpmn:outgoing>Flow_0qe4yyi</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_0qe4yyi" sourceRef="Activity_1eer6a5" targetRef="Gateway_1h9kl4s" />
+    <bpmn:sequenceFlow id="Flow_15d65h3" name="DND" sourceRef="Gateway_0of0w5x" targetRef="Event_05qr5kd">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{partner_dnd}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_1rypkg1" sourceRef="Activity_0yvqoaa" targetRef="Activity_1jif6nn" />
+    <bpmn:serviceTask id="Activity_0yvqoaa" name="Get Service details" camunda:type="external" camunda:topic="service-details">
+      <bpmn:incoming>Flow_1ukq2yl</bpmn:incoming>
+      <bpmn:outgoing>Flow_1rypkg1</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="Gateway_1h9kl4s">
+      <bpmn:incoming>Flow_0qe4yyi</bpmn:incoming>
+      <bpmn:outgoing>Flow_00lchjl</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0muajyz</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_00lchjl" name="Device blacklisted" sourceRef="Gateway_1h9kl4s" targetRef="Event_1qhq9dr">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{device_blacklist}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_0muajyz" sourceRef="Gateway_1h9kl4s" targetRef="Activity_1g6n6on">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{not device_blacklist}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:businessRuleTask id="Activity_1g6n6on" name="Service listed for all" camunda:resultVariable="listed" camunda:decisionRef="list-for-all" camunda:mapDecisionResult="singleEntry">
+      <bpmn:incoming>Flow_0muajyz</bpmn:incoming>
+      <bpmn:outgoing>Flow_0xs6c7e</bpmn:outgoing>
+    </bpmn:businessRuleTask>
+    <bpmn:sequenceFlow id="Flow_0xs6c7e" sourceRef="Activity_1g6n6on" targetRef="Gateway_1agzfed" />
+    <bpmn:sequenceFlow id="Flow_0b74pmw" sourceRef="Gateway_1agzfed" targetRef="Gateway_0cz1g7q">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{listed == 'none'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:endEvent id="Event_1bc52w4" name="Send List status">
+      <bpmn:incoming>Flow_1tqe1kk</bpmn:incoming>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_0qr5r1o" messageRef="Message_0jclo6d" camunda:class="com.example.workflow.SendListStatus" />
+    </bpmn:endEvent>
+    <bpmn:endEvent id="Event_05qr5kd" name="Send List status">
+      <bpmn:incoming>Flow_15d65h3</bpmn:incoming>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_1k3uxnp" messageRef="Message_0jclo6d" camunda:class="com.example.workflow.SendListStatus" />
+    </bpmn:endEvent>
+    <bpmn:endEvent id="Event_1qhq9dr" name="Send List status">
+      <bpmn:incoming>Flow_00lchjl</bpmn:incoming>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_1rktf0a" camunda:class="com.example.workflow.SendListStatus" />
+    </bpmn:endEvent>
+    <bpmn:endEvent id="Event_1hu00jo" name="Send List status">
+      <bpmn:incoming>Flow_1o255gk</bpmn:incoming>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_1120os6" messageRef="Message_0jclo6d" camunda:class="com.example.workflow.SendListStatus" />
+    </bpmn:endEvent>
+    <bpmn:endEvent id="Event_19wdoo3" name="Send List status">
+      <bpmn:incoming>Flow_0xqnk06</bpmn:incoming>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_142cloe" messageRef="Message_0jclo6d" camunda:class="com.example.workflow.SendListStatus" />
+    </bpmn:endEvent>
+    <bpmn:endEvent id="Event_0cjhrir" name="Send List status">
+      <bpmn:incoming>Flow_1myzpyr</bpmn:incoming>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_1uuhpim" messageRef="Message_0jclo6d" camunda:class="com.example.workflow.SendListStatus" />
+    </bpmn:endEvent>
+    <bpmn:endEvent id="Event_0obixa6" name="Send List status">
+      <bpmn:incoming>Flow_1vn6g5r</bpmn:incoming>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_122xkct" messageRef="Message_0jclo6d" camunda:class="com.example.workflow.SendListStatus" />
+    </bpmn:endEvent>
+    <bpmn:endEvent id="Event_1hul7gt" name="Send List status">
+      <bpmn:incoming>Flow_0essqh6</bpmn:incoming>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_10us0mk" messageRef="Message_0jclo6d" camunda:class="com.example.workflow.SendListStatus" />
+    </bpmn:endEvent>
+    <bpmn:callActivity id="Activity_1ps15ey" name="Service Whitelist lookup" calledElement="service-whitelist">
+      <bpmn:extensionElements>
+        <camunda:in variables="all" />
+        <camunda:out variables="all" />
+        <camunda:in businessKey="#{execution.processBusinessKey}" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0t56brp</bpmn:incoming>
+      <bpmn:outgoing>Flow_05nzsi2</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:callActivity id="Activity_1nwyttq" name="Service Blacklist lookup" calledElement="service-blacklist">
+      <bpmn:extensionElements>
+        <camunda:in variables="all" />
+        <camunda:out variables="all" />
+        <camunda:in businessKey="#{execution.processBusinessKey}" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1c14lxg</bpmn:incoming>
+      <bpmn:outgoing>Flow_0g0jbd4</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:callActivity id="Activity_0cmj7cn" name="Global blacklist lookup" calledElement="globalblacklist">
+      <bpmn:extensionElements>
+        <camunda:in variables="all" />
+        <camunda:out variables="all" />
+        <camunda:in businessKey="#{execution.processBusinessKey}" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_179xb3z</bpmn:incoming>
+      <bpmn:outgoing>Flow_0essqh6</bpmn:outgoing>
+    </bpmn:callActivity>
+  </bpmn:process>
+  <bpmn:message id="Message_0jclo6d" name="ListStatus" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="service-list-validation">
+      <bpmndi:BPMNEdge id="Flow_1ukq2yl_di" bpmnElement="Flow_1ukq2yl">
+        <di:waypoint x="188" y="177" />
+        <di:waypoint x="220" y="177" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1u1o29d_di" bpmnElement="Flow_1u1o29d">
+        <di:waypoint x="450" y="177" />
+        <di:waypoint x="485" y="177" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1tqe1kk_di" bpmnElement="Flow_1tqe1kk">
+        <di:waypoint x="510" y="152" />
+        <di:waypoint x="510" y="60" />
+        <di:waypoint x="622" y="60" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="458" y="104" width="43" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1scdb5d_di" bpmnElement="Flow_1scdb5d">
+        <di:waypoint x="535" y="177" />
+        <di:waypoint x="600" y="177" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="548" y="163" width="23" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0t56brp_di" bpmnElement="Flow_0t56brp">
+        <di:waypoint x="1225" y="380" />
+        <di:waypoint x="1332" y="380" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1237" y="355" width="83" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1sg3moj_di" bpmnElement="Flow_1sg3moj">
+        <di:waypoint x="1200" y="405" />
+        <di:waypoint x="1200" y="490" />
+        <di:waypoint x="1477" y="490" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1o255gk_di" bpmnElement="Flow_1o255gk">
+        <di:waypoint x="1200" y="255" />
+        <di:waypoint x="1200" y="170" />
+        <di:waypoint x="1342" y="170" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1226" y="153" width="88" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_05nzsi2_di" bpmnElement="Flow_05nzsi2">
+        <di:waypoint x="1432" y="380" />
+        <di:waypoint x="1477" y="380" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0xqnk06_di" bpmnElement="Flow_0xqnk06">
+        <di:waypoint x="1527" y="380" />
+        <di:waypoint x="1672" y="380" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1584" y="362" width="50" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1rxzdv8_di" bpmnElement="Flow_1rxzdv8">
+        <di:waypoint x="1502" y="405" />
+        <di:waypoint x="1502" y="465" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1c14lxg_di" bpmnElement="Flow_1c14lxg">
+        <di:waypoint x="1527" y="490" />
+        <di:waypoint x="1620" y="490" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1532" y="462" width="80" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0g0jbd4_di" bpmnElement="Flow_0g0jbd4">
+        <di:waypoint x="1720" y="490" />
+        <di:waypoint x="1775" y="490" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1myzpyr_di" bpmnElement="Flow_1myzpyr">
+        <di:waypoint x="1825" y="490" />
+        <di:waypoint x="1912" y="490" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1845" y="472" width="53" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0essqh6_di" bpmnElement="Flow_0essqh6">
+        <di:waypoint x="2010" y="730" />
+        <di:waypoint x="2102" y="730" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0hf0k11_di" bpmnElement="Flow_0hf0k11">
+        <di:waypoint x="1800" y="515" />
+        <di:waypoint x="1800" y="570" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0bmpf51_di" bpmnElement="Flow_0bmpf51">
+        <di:waypoint x="1502" y="515" />
+        <di:waypoint x="1502" y="610" />
+        <di:waypoint x="1750" y="610" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1wq6mur_di" bpmnElement="Flow_1wq6mur">
+        <di:waypoint x="1800" y="650" />
+        <di:waypoint x="1800" y="705" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1vn6g5r_di" bpmnElement="Flow_1vn6g5r">
+        <di:waypoint x="1800" y="755" />
+        <di:waypoint x="1800" y="822" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_179xb3z_di" bpmnElement="Flow_179xb3z">
+        <di:waypoint x="1825" y="730" />
+        <di:waypoint x="1910" y="730" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0yhs6yb_di" bpmnElement="Flow_0yhs6yb">
+        <di:waypoint x="700" y="177" />
+        <di:waypoint x="735" y="177" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0mu4ibq_di" bpmnElement="Flow_0mu4ibq">
+        <di:waypoint x="760" y="202" />
+        <di:waypoint x="760" y="280" />
+        <di:waypoint x="800" y="280" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0qe4yyi_di" bpmnElement="Flow_0qe4yyi">
+        <di:waypoint x="900" y="280" />
+        <di:waypoint x="925" y="280" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_15d65h3_di" bpmnElement="Flow_15d65h3">
+        <di:waypoint x="760" y="152" />
+        <di:waypoint x="760" y="60" />
+        <di:waypoint x="802" y="60" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="763" y="102" width="24" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1rypkg1_di" bpmnElement="Flow_1rypkg1">
+        <di:waypoint x="320" y="177" />
+        <di:waypoint x="350" y="177" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_00lchjl_di" bpmnElement="Flow_00lchjl">
+        <di:waypoint x="950" y="255" />
+        <di:waypoint x="950" y="60" />
+        <di:waypoint x="992" y="60" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="855" y="109" width="89" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0muajyz_di" bpmnElement="Flow_0muajyz">
+        <di:waypoint x="975" y="280" />
+        <di:waypoint x="1020" y="280" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0xs6c7e_di" bpmnElement="Flow_0xs6c7e">
+        <di:waypoint x="1120" y="280" />
+        <di:waypoint x="1175" y="280" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0b74pmw_di" bpmnElement="Flow_0b74pmw">
+        <di:waypoint x="1200" y="305" />
+        <di:waypoint x="1200" y="355" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Gateway_1xkinlz_di" bpmnElement="Gateway_1xkinlz" isMarkerVisible="true">
+        <dc:Bounds x="1775" y="465" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1uv132m_di" bpmnElement="Activity_1xpu7uh">
+        <dc:Bounds x="1750" y="570" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1fpxqtf_di" bpmnElement="Gateway_1fpxqtf" isMarkerVisible="true">
+        <dc:Bounds x="1775" y="705" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="152" y="159" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0qwvvyc_di" bpmnElement="Activity_0yvqoaa">
+        <dc:Bounds x="220" y="137" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0jdleit_di" bpmnElement="Activity_1jif6nn">
+        <dc:Bounds x="350" y="137" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1xzql2l_di" bpmnElement="Gateway_1xzql2l" isMarkerVisible="true">
+        <dc:Bounds x="485" y="152" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0nyjwmf_di" bpmnElement="Activity_0w81915">
+        <dc:Bounds x="600" y="137" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0of0w5x_di" bpmnElement="Gateway_0of0w5x" isMarkerVisible="true">
+        <dc:Bounds x="735" y="152" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1lo6lb2_di" bpmnElement="Activity_1eer6a5">
+        <dc:Bounds x="800" y="240" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1h9kl4s_di" bpmnElement="Gateway_1h9kl4s" isMarkerVisible="true">
+        <dc:Bounds x="925" y="255" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0cz1g7q_di" bpmnElement="Gateway_0cz1g7q" isMarkerVisible="true">
+        <dc:Bounds x="1175" y="355" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0l3u98s_di" bpmnElement="Gateway_0l3u98s" isMarkerVisible="true">
+        <dc:Bounds x="1477" y="355" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0lcselu_di" bpmnElement="Gateway_0lcselu" isMarkerVisible="true">
+        <dc:Bounds x="1477" y="465" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0vqsrav_di" bpmnElement="Activity_1g6n6on">
+        <dc:Bounds x="1020" y="240" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1agzfed_di" bpmnElement="Gateway_1agzfed" isMarkerVisible="true">
+        <dc:Bounds x="1175" y="255" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_11rfirc_di" bpmnElement="Event_1bc52w4">
+        <dc:Bounds x="622" y="42" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="603" y="85" width="79" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_07ee0ce_di" bpmnElement="Event_05qr5kd">
+        <dc:Bounds x="802" y="42" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="782" y="85" width="79" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_13jx595_di" bpmnElement="Event_1qhq9dr">
+        <dc:Bounds x="992" y="42" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="972" y="85" width="79" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1rfpb7l_di" bpmnElement="Event_1hu00jo">
+        <dc:Bounds x="1342" y="152" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1321" y="195" width="79" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_063slkq_di" bpmnElement="Event_19wdoo3">
+        <dc:Bounds x="1672" y="362" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1651" y="405" width="79" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1g2r7vk_di" bpmnElement="Event_0cjhrir">
+        <dc:Bounds x="1912" y="472" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1891" y="515" width="79" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1a1tzwy_di" bpmnElement="Event_0obixa6">
+        <dc:Bounds x="1782" y="822" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1762" y="865" width="79" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0gup8rf_di" bpmnElement="Event_1hul7gt">
+        <dc:Bounds x="2102" y="712" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2081" y="755" width="79" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="CallActivity_0wdelyy_di" bpmnElement="Activity_1ps15ey">
+        <dc:Bounds x="1332" y="340" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="CallActivity_0e9qg72_di" bpmnElement="Activity_1nwyttq">
+        <dc:Bounds x="1620" y="450" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="CallActivity_0ec0h8f_di" bpmnElement="Activity_0cmj7cn">
+        <dc:Bounds x="1910" y="690" width="100" height="80" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
